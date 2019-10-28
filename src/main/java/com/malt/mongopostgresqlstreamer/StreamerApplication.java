@@ -22,6 +22,9 @@ public class StreamerApplication implements ApplicationRunner {
     @Value("${mongo.connector.forcereimport:false}")
     private boolean forceReimport;
 
+    @Value("${mongo.connector.stopAfterInitialImport:false}")
+    private boolean stopAfterInitialImport;
+
     @Autowired
     private OplogStreamer oplogStreamer;
     @Autowired
@@ -56,6 +59,12 @@ public class StreamerApplication implements ApplicationRunner {
             long length = end - start;
             checkpointManager.keep(checkpoint.get());
             checkpointManager.storeImportEnd(length);
+            
+            if (stopAfterInitialImport) {
+                log.info("Stopping after first end of import as requested");
+                System.exit(0);
+                return;
+            }
         }
 
         try {
