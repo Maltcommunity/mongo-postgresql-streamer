@@ -20,7 +20,7 @@ ENV MANAGEMENT_SERVER_PORT=${SPRING_MANAGEMENT_PORT}
 # You may want to set Xmx here when not running on a kubernetes platform with resources limit set (local dev), otherwise, the JVM limits will be unconstrained.
 ENV JAVA_TOOL_OPTIONS=""
 
-RUN addgroup -S malt && adduser -S -G malt -s /bin/bash -h /opt/malt-app malt
+RUN addgroup -S malt -g 998 && adduser -S -G malt -u 999 -s /bin/bash -h /opt/malt-app malt
 RUN mkdir -p /var/log/malt-app /opt/malt-app /etc/malt-app /vault
 
 # Replace APP_VERSION with a wildcard if we build within a reproductible container context (gitlab vs bamboo)
