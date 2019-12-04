@@ -1,4 +1,4 @@
-FROM eu.gcr.io/malt-build/jre:master
+FROM eu.gcr.io/malt-build/debian-jre-adoptopenjdk-11:54fc7663
 
 ARG APP_NAME=mongo-postgresql-streamer
 ENV APP_NAME=${APP_NAME}
