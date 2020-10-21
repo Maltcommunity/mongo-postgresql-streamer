@@ -61,9 +61,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.malt</groupId>
+            <groupId>com.traackr</groupId>
             <artifactId>mongo-follower</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
