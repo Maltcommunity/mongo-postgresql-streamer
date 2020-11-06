@@ -29,15 +29,21 @@ public class FlattenMongoDocument {
 
     public static FlattenMongoDocument fromDocument(Document document) {
         FlattenMongoDocument flattenMongoDocument = new FlattenMongoDocument();
-        flattenMongoDocument.setValues(
-                filters(
-                        new JsonFlattener(document.toJson())
-                                .withFlattenMode(FlattenMode.KEEP_ARRAYS)
-                                .flattenAsMap()
-                )
-        );
-        addCreationDateIfPossible(flattenMongoDocument);
-        fixDateOutOfRange(flattenMongoDocument);
+
+        try {
+            flattenMongoDocument.setValues(
+                    filters(
+                            new JsonFlattener(document.toJson())
+                                    .withFlattenMode(FlattenMode.KEEP_ARRAYS)
+                                    .flattenAsMap()
+                    )
+            );
+            addCreationDateIfPossible(flattenMongoDocument);
+            fixDateOutOfRange(flattenMongoDocument);
+        } catch(JsonParseException ex) {
+            log.error("Could not parse JSON of document: {}.", document.toString());
+            throw ex;
+        }
 
         return flattenMongoDocument;
     }
