@@ -3,8 +3,10 @@ package com.malt.mongopostgresqlstreamer.model;
 import com.github.wnameless.json.flattener.FlattenMode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.bson.json.JsonParseException;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Data
 public class FlattenMongoDocument {
     private Map<String, Object> values;
