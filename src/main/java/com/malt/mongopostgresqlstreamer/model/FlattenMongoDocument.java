@@ -44,12 +44,9 @@ public class FlattenMongoDocument {
             );
             addCreationDateIfPossible(flattenMongoDocument);
             fixDateOutOfRange(flattenMongoDocument);
-        } catch(JsonParseException ex) {
-            log.error("Could not parse JSON of document: {}.", document.toString());
-            throw ex;
-        } catch(ParseException ex) {
-            log.error("Could not parse JSON of document: {}.", document.toString());
-            throw ex;
+        } catch(JsonParseException|ParseException ex) {
+            log.error("Could not parse JSON, skip document: {}.", document.toString());
+            return null;
         }
 
         return flattenMongoDocument;

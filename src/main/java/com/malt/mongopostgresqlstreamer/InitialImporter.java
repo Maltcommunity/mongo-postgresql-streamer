@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Predicate;
@@ -61,6 +62,7 @@ public class InitialImporter {
                                                 .iterator()
                                 )
                                         .map(FlattenMongoDocument::fromDocument)
+                                        .filter(Objects::nonNull)
                                         .filter(tableMapping.getFilters().stream().map(FilterMapping::apply).reduce(Predicate::or).orElse(t -> true)),
                                 databaseMapping
                         );
