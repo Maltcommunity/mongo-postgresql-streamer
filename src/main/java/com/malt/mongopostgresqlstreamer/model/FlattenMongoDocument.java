@@ -1,5 +1,6 @@
 package com.malt.mongopostgresqlstreamer.model;
 
+import com.eclipsesource.json.ParseException;
 import com.github.wnameless.json.flattener.FlattenMode;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import lombok.Data;
@@ -44,6 +45,9 @@ public class FlattenMongoDocument {
             addCreationDateIfPossible(flattenMongoDocument);
             fixDateOutOfRange(flattenMongoDocument);
         } catch(JsonParseException ex) {
+            log.error("Could not parse JSON of document: {}.", document.toString());
+            throw ex;
+        } catch(ParseException ex) {
             log.error("Could not parse JSON of document: {}.", document.toString());
             throw ex;
         }
