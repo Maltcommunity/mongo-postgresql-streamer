@@ -1,0 +1,129 @@
+{
+  "imports": {
+    "_source": "imports",
+    "_destination": "imports",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "createdBy.profileId": {
+      "dest": "profileId",
+      "type": "TEXT",
+      "index": true
+    },
+    "createdBy.firstName": {
+      "dest": "firstName",
+      "type": "TEXT"
+    },
+    "createdBy.lastName": {
+      "dest": "lastName",
+      "type": "TEXT"
+    },
+    "status": {
+      "type": "TEXT",
+      "index": true
+    },
+    "createdAt": {
+      "type": "DATE"
+    },
+    "updatedAt": {
+      "type": "DATE"
+    }
+  },
+  "imports_rows": {
+    "_source": "rows",
+    "_destination": "imports_rows",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "importId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "validationStatus": {
+      "type": "TEXT",
+      "index": true
+    },
+    "processingStatus": {
+      "type": "TEXT",
+      "index": true
+    },
+    "processingUpdatedFields": {
+      "dest": "imports_rows_processing_updated_fields",
+      "type": "_ARRAY",
+      "fk": "rowId"
+    },
+    "processingRejectedErrors": {
+      "dest": "imports_rows_processing_rejected_errors",
+      "type": "_ARRAY",
+      "fk": "rowId"
+    }
+  },
+  "imports_rows_processing_updated_fields": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "rowId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "key": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "imports_rows_processing_rejected_errors": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "rowId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "key": {
+      "type": "TEXT",
+      "index": true
+    },
+    "values": {
+      "dest": "imports_rows_processing_rejected_errors_values",
+      "type": "_ARRAY",
+      "fk": "errorId"
+    }
+  },
+  "imports_rows_processing_rejected_errors_values": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "errorId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "code": {
+      "type": "TEXT",
+      "index": true
+    },
+    "message.en": {
+      "dest": "message_en",
+      "type": "TEXT"
+    },
+    "message.fr": {
+      "dest": "message_fr",
+      "type": "TEXT"
+    }
+  }
+}

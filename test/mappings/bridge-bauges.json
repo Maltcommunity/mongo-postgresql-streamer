@@ -1,0 +1,336 @@
+{
+  "clients": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "name": {
+      "type": "TEXT",
+      "index": true
+    },
+    "active": {
+      "type": "BOOLEAN"
+    },
+    "testOnly": {
+      "dest": "isTest",
+      "type": "BOOLEAN"
+    },
+    "languages": {
+      "dest": "clients_languages",
+      "type": "_ARRAY",
+      "fk": "clientId",
+      "valueField": "language"
+    },
+    "modules.contentPublication.activated": {
+      "dest": "hasContentPublication",
+      "type": "BOOLEAN"
+    },
+    "modules.leads.activated": {
+      "dest": "hasLeads",
+      "type": "BOOLEAN"
+    },
+    "modules.newsletter.activated": {
+      "dest": "hasNewsletter",
+      "type": "BOOLEAN"
+    },
+    "modules.onlineListing.activated": {
+      "dest": "hasOnlineListing",
+      "type": "BOOLEAN"
+    },
+    "modules.reviews.activated": {
+      "dest": "hasReviews",
+      "type": "BOOLEAN"
+    },
+    "modules.storeLocator.activated": {
+      "dest": "hasStoreLocator",
+      "type": "BOOLEAN"
+    },
+    "modules.dashboard.activated": {
+      "dest": "hasStoreLocatorDashboard",
+      "type": "BOOLEAN"
+    },
+    "modules.sea.activated": {
+      "dest": "hasSea",
+      "type": "BOOLEAN"
+    }
+  },
+  "clients_languages": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "language": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "locations": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "customId": {
+      "type": "TEXT"
+    },
+    "registrationNumber": {
+      "type": "TEXT"
+    },
+    "contact.email": {
+      "dest": "email",
+      "type": "TEXT"
+    },
+    "contact.fax": {
+      "dest": "fax",
+      "type": "TEXT"
+    },
+    "contact.phone.number": {
+      "dest": "phone",
+      "type": "TEXT"
+    },
+    "localisation.coordinates.longitude": {
+      "dest": "longitude",
+      "type": "TEXT"
+    },
+    "localisation.coordinates.latitude": {
+      "dest": "latitude",
+      "type": "TEXT"
+    },
+    "localisation.country.code": {
+      "dest": "countryCode",
+      "type": "TEXT"
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "active": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT"
+    },
+    "hasStoreLocatorPage": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "hasOnlineStoreLocatorPage": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "epj": {
+      "type": "TEXT"
+    },
+    "isDelegated": {
+      "type": "BOOLEAN"
+    },
+    "type._id": {
+      "dest": "typeId",
+      "type": "TEXT",
+      "index": true
+    },
+    "openingHours.periods": {
+      "dest": "locations_openinghours_periods",
+      "type": "_ARRAY",
+      "fk": "locationId"
+    },
+    "openingHours.specialPeriods": {
+      "dest": "locations_openinghours_specialperiods",
+      "type": "_ARRAY",
+      "fk": "locationId"
+    }
+  },
+  "locations_openinghours_periods": {
+    "pk": "id",
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "openDay": {
+      "type": "TEXT"
+    },
+    "openTime": {
+      "type": "TEXT"
+    },
+    "closeDay": {
+      "type": "TEXT"
+    },
+    "closeTime": {
+      "type": "TEXT"
+    }
+  },
+  "locations_openinghours_specialperiods": {
+    "pk": "id",
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "startDate": {
+      "type": "TEXT"
+    },
+    "endDate": {
+      "type": "TEXT"
+    },
+    "isClosed": {
+      "type": "BOOLEAN"
+    },
+    "timeSlots": {
+      "dest": "locations_openinghours_specialperiods_timeslots",
+      "type": "_ARRAY",
+      "fk": "specialOpeningHoursTimeSlotId"
+    }
+  },
+  "locations_openinghours_specialperiods_timeslots": {
+    "pk": "id",
+    "specialOpeningHoursTimeSlotId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "openTime": {
+      "type": "TEXT"
+    },
+    "closeTime": {
+      "type": "TEXT"
+    }
+  },
+  "offerranges": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT"
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "offers": {
+      "type": "_ARRAY",
+      "fk": "offerrangeid",
+      "dest": "offerranges_offers"
+    },
+    "rangeType": {
+      "type": "TEXT"
+    }
+  },
+  "offerranges_offers": {
+    "pk": "id",
+    "_id": {
+      "dest": "offerranges_offers_id",
+      "type": "TEXT",
+      "index": true
+    },
+    "offerrangeid": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "imports_v1": {
+    "_source": "imports",
+    "_destination": "imports_v1",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT",
+      "index": true
+    },
+    "user": {
+      "dest": "userId",
+      "type": "TEXT",
+      "index": true
+    },
+    "createdAt": {
+      "type": "DATE"
+    },
+    "updatedAt": {
+      "type": "DATE"
+    }
+  },
+  "imports_v1_rows": {
+    "_source": "importrows",
+    "_destination": "imports_v1_rows",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "import": {
+      "dest": "importId",
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT",
+      "index": true
+    },
+    "validation": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "imports_v1_mappings": {
+    "_source": "mappings",
+    "_destination": "imports_v1_mappings",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "import": {
+      "dest": "importId",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "mapping": {
+      "type": "_ARRAY",
+      "fk": "mappingId",
+      "dest": "imports_v1_mappings_mapping"
+    }
+  },
+  "imports_v1_mappings_mapping": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "mappingId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "key": {
+      "type": "TEXT",
+      "index": true
+    },
+    "field.property": {
+      "dest": "property",
+      "type": "TEXT",
+      "index": true
+    }
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "publications_settings": {
+    "_source": "settings",
+    "_destination": "publications_settings",
+    "pk": "id",
+    "client": {
+      "type": "TEXT",
+      "dest": "clientId",
+      "index": true
+    },
+    "activated": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "hotContent": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "activatedPublishersIds": {
+      "dest": "publications_settings_activated_publishers",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "settingsId",
+      "valueField": "publisherId"
+    }
+  },
+  "publications_settings_activated_publishers": {
+    "_destination": "publications_settings_activated_publishers",
+    "pk": "id",
+    "settingsId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "publisherId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "publications": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT"
+    },
+    "language": {
+      "type": "TEXT"
+    },
+    "title": {
+      "type": "TEXT"
+    },
+    "name": {
+      "type": "TEXT"
+    },
+    "content": {
+      "type": "TEXT"
+    },
+    "createdBy.user._id": {
+      "type": "TEXT",
+      "dest": "profileId"
+    },
+    "type.name": {
+      "type": "TEXT",
+      "dest": "type"
+    },
+    "schedule.start": {
+      "type": "DATE",
+      "dest": "startDate"
+    },
+    "schedule.end": {
+      "type": "DATE",
+      "dest": "endDate"
+    },
+    "displays": {
+      "dest": "publications_displays",
+      "type": "_ARRAY",
+      "fk": "publicationId"
+    }
+
+  },
+  "publications_displays": {
+    "_source": "displays",
+    "_destination": "publications_displays",
+    "pk": "id",
+    "zone.slug": {
+      "type": "TEXT",
+      "dest": "zone"
+    },
+    "publicationId": {
+      "dest": "publicationId",
+      "type": "TEXT",
+      "index": true
+    }
+  }
+}

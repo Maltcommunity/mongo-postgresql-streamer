@@ -1,0 +1,359 @@
+{
+  "pm_settings": {
+    "_source": "settings",
+    "_destination": "pm_settings",
+    "pk": "id",
+    "clientId": {
+      "type": "TEXT",
+      "dest": "clientId",
+      "index": true
+    },
+    "yelsterCompanyId": {
+      "type": "TEXT",
+      "dest": "companyId",
+      "index": true
+    },
+    "activated": {
+      "type": "BOOLEAN",
+      "index": true
+    },
+    "activatedPublishers": {
+      "type": "_ARRAY",
+      "fk": "settingsId",
+      "dest": "pm_settings_activated_publishers"
+    },
+    "locationsDiffusion.publicName": {
+      "type": "TEXT",
+      "dest": "publicName",
+      "index": true
+    },
+    "locationsDiffusion.usePublicName": {
+      "type": "BOOLEAN",
+      "dest": "usePublicName",
+      "index": true
+    },
+    "locationsDiffusion.filter.type": {
+      "type": "TEXT",
+      "dest": "type",
+      "index": true
+    },
+    "locationsDiffusion.filter.locationsId": {
+      "dest": "pm_settings_diffusion_by_locations",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "settingsId",
+      "valueField": "locationId"
+    },
+    "locationsDiffusion.filter.typeIds": {
+      "dest": "pm_settings_diffusion_by_types",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "settingsId",
+      "valueField": "typeId"
+    }
+  },
+  "pm_settings_diffusion_by_types": {
+    "_source": "settings_includedTypes",
+    "_destination": "pm_settings_diffusion_by_types",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "typeId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "settingsId": {
+      "dest": "settingsId",
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "pm_settings_diffusion_by_locations": {
+    "_source": "settings_includedLocations",
+    "_destination": "pm_settings_diffusion_by_locations",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "settingsId": {
+      "dest": "settingsId",
+      "type": "TEXT",
+      "index": true
+    },
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "pm_settings_activated_publishers": {
+    "_source": "activated_publishers",
+    "_destination": "pm_settings_activated_publishers",
+    "pk": "id",
+    "settingsId": {
+      "dest": "settingsId",
+      "type": "TEXT",
+      "index": true
+    },
+    "id": {
+      "dest": "publisherName",
+      "type": "TEXT",
+      "index": true
+    },
+    "activationDate": {
+      "dest": "activationDate",
+      "type": "DATE"
+    },
+    "config": {
+      "type": "_ARRAY",
+      "fk": "pm_settings_activated_publishers_id",
+      "dest": "pm_settings_activated_publishers_config"
+    }
+  },
+  "pm_settings_activated_publishers_config": {
+    "_source": "config",
+    "_destination": "pm_settings_activated_publishers_config",
+    "pk": "id",
+    "pm_settings_activated_publishers_id": {
+      "dest": "pm_settings_activated_publishers_id",
+      "type": "TEXT"
+    },
+    "key": {
+      "dest": "key",
+      "type": "TEXT"
+    },
+    "value": {
+      "dest": "value",
+      "type": "TEXT"
+    }
+  },
+  "pm_publishstates": {
+    "_source": "publishstates",
+    "_destination": "pm_publishstates",
+    "pk": "id",
+    "cause": {
+      "type": "TEXT"
+    },
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "errorMessage": {
+      "type": "TEXT"
+    },
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT"
+    },
+    "badLocationDetails": {
+      "dest": "pm_publishstates_details",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "detailId",
+      "valueField": "details"
+    }
+  },
+  "pm_publishstates_details": {
+    "_source": "publishstates_badLocationDetails",
+    "_destination": "pm_publishstates_details",
+    "pk": "id",
+    "error": {
+      "type": "TEXT"
+    },
+    "field": {
+      "type": "TEXT"
+    },
+    "detailId": {
+      "dest": "detailId",
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "pm_locations": {
+    "_source": "locations",
+    "_destination": "pm_locations",
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "epj": {
+      "type": "TEXT"
+    },
+    "name": {
+      "type": "TEXT"
+    },
+    "address.address1": {
+      "dest": "address1",
+      "type": "TEXT"
+    },
+    "address.address2": {
+      "dest": "address2",
+      "type": "TEXT"
+    },
+    "address.city": {
+      "dest": "city",
+      "type": "TEXT"
+    },
+    "address.countryCode": {
+      "dest": "countryCode",
+      "type": "TEXT"
+    },
+    "address.postalCode": {
+      "dest": "postalCode",
+      "type": "TEXT"
+    },
+    "description": {
+      "dest": "description",
+      "type": "TEXT"
+    },
+    "status": {
+      "dest": "status",
+      "type": "TEXT"
+    },
+    "clientId": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "yelsterLocationId": {
+      "dest": "yelsterId",
+      "type": "TEXT"
+    }
+  },
+  "pm_synchronizationstates": {
+    "_source": "synchronizationstates",
+    "_destination": "pm_synchronizationstates",
+    "pk": "id",
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "detail.error.message": {
+      "dest": "errorMessage",
+      "type": "TEXT"
+    },
+    "detail.error.publisherTechnicalMessage": {
+      "dest": "errorTechnicalMessage",
+      "type": "TEXT"
+    },
+    "detail.error.fieldsErrors": {
+      "dest": "pm_synchronizationstates_fieldsError",
+      "type": "_ARRAY",
+      "fk": "synchronizationstateid"
+    },
+    "detail.externalLinks": {
+      "dest": "pm_synchronizationstates_externalLinks",
+      "type": "_ARRAY",
+      "fk": "synchronizationstateid"
+    },
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "publisherId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "lastModified": {
+      "type": "TEXT"
+    },
+    "status": {
+      "type": "TEXT"
+    }
+  },
+  "pm_synchronizationstates_fieldsError": {
+    "_source": "publishstates_badLocationDetails",
+    "_destination": "pm_synchronizationstates_fieldsError",
+    "pk": "id",
+    "synchronizationstateid": {
+      "dest": "synchronizationstateid",
+      "type": "TEXT"
+    },
+    "error": {
+      "type": "TEXT"
+    },
+    "field": {
+      "type": "TEXT"
+    }
+  },
+  "pm_synchronizationstates_externalLinks": {
+    "pk": "id",
+    "synchronizationstateid": {
+      "dest": "synchronizationstateid",
+      "type": "TEXT"
+    },
+    "url": {
+      "type": "TEXT"
+    },
+    "name": {
+      "type": "TEXT"
+    }
+  },
+  "pm_publishers": {
+    "_source": "publishers",
+    "_destination": "pm_publishers",
+    "pk": "id",
+    "id": {
+      "dest": "publisherId",
+      "type": "TEXT",
+      "index": true
+    },
+    "name": {
+      "dest": "name",
+      "type": "TEXT",
+      "index": true
+    },
+    "proxyPublisherId": {
+      "dest": "proxyPublisherId",
+      "type": "TEXT"
+    },
+    "countries": {
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "publisherId",
+      "dest": "pm_publishers_countries",
+      "valueField": "countryId"
+    },
+    "features": {
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "publisherId",
+      "dest": "pm_publishers_features",
+      "valueField": "featureId"
+    }
+  },
+  "pm_publishers_countries": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "publisherId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "countryId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "pm_publishers_features": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "publisherId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "featureId": {
+      "type": "TEXT",
+      "index": true
+    }
+  }
+}

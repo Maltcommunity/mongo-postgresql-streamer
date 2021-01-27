@@ -1,0 +1,21 @@
+{
+    "frontoffices": {
+        "pk": "id",
+        "_id": {
+            "dest": "id",
+            "type": "TEXT",
+            "index": true
+        },
+        "clientId": {
+            "type": "TEXT",
+            "index": true
+        },
+        "online": {
+            "type": "BOOLEAN"
+        },
+        "activated": {
+            "type": "BOOLEAN"
+        }
+    }
+  }
+  

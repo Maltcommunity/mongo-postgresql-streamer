@@ -1,0 +1,40 @@
+{
+  "leads": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT"
+    },
+    "messages": {
+      "dest": "leads_messages",
+      "type": "_ARRAY",
+      "fk": "leadId"
+    }
+  },
+  "leads_messages": {
+    "pk": "id",
+    "leadId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "status": {
+      "type": "TEXT",
+      "index": true
+    },
+    "isBridgeUser": {
+      "type": "BOOLEAN"
+    },
+    "internal": {
+      "type": "BOOLEAN"
+    }
+  }
+}
