@@ -1,8 +1,11 @@
 package com.malt.mongopostgresqlstreamer;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,39 +28,46 @@ import com.malt.mongopostgresqlstreamer.model.FilterMapping;
 import com.malt.mongopostgresqlstreamer.model.Mappings;
 import com.malt.mongopostgresqlstreamer.model.TableMapping;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class MappingsManager {
 
 	private final ResourceResolverService resourceResolverService;
-	private final String mappingFile;
+	private final File mapping;
 
 	Mappings mappingConfigs;
 
 	@Inject
 	public MappingsManager(ResourceResolverService resourceResolverService,
-			@Value("${mappings:mappings.json}") String mappingFile) {
+			@Value("${mappings:mappings.json}") String mappingPath) {
 
-		this.mappingFile = mappingFile;
+		this.mapping = new File(mappingPath);
+
 		this.resourceResolverService = resourceResolverService;
 	}
 
 	@PostConstruct
 	public void read() {
-		mappingConfigs = read(mappingFile);
+		mappingConfigs = read(mapping);
 	}
 
-	Mappings read(String mappingFile) {
+	Mappings read(File mapping) {
 		Mappings mappingConfigs = new Mappings();
 		List<DatabaseMapping> dbs = new ArrayList<>();
 
-		InputStream is = resourceResolverService.find(mappingFile);
-		JsonObject mappings = new JsonParser().parse(new InputStreamReader(is))
-				.getAsJsonObject();
+		if (mapping.isFile()) {
+			collectDatabaseMappings(true, mapping, dbs);
+		} else if (mapping.isDirectory()) {
+			for (File mapFile : Arrays.stream(mapping.listFiles())
+					.filter(File::isFile)
+					.filter(f -> f.getName()
+							.endsWith(".json"))
+					.collect(Collectors.toList())) {
+				collectDatabaseMappings(false, mapFile, dbs);
 
-		Set<String> databases = mappings.keySet();
-		for (String dbName : databases) {
-			DatabaseMapping db = readDatabaseMapping(mappings, dbName);
-			dbs.add(db);
+			}
 		}
 
 		mappingConfigs.setDatabaseMappings(dbs);
@@ -65,6 +75,44 @@ public class MappingsManager {
 		checkIntegrity(mappingConfigs);
 
 		return mappingConfigs;
+	}
+
+	private void collectDatabaseMappings(boolean aggregate, File mapping, List<DatabaseMapping> dbs) {
+		log.info("Import database mapping " + mapping.getAbsolutePath() + "...");
+		try {
+
+			String inputJson = loadJson(mapping);
+			if (!aggregate) {
+				inputJson = injectDbName(mapping, inputJson);
+			}
+			JsonObject mappings = new JsonParser().parse(inputJson)
+					.getAsJsonObject();
+
+			Set<String> databases = mappings.keySet();
+			for (String dbName : databases) {
+				DatabaseMapping db = readDatabaseMapping(mappings, dbName);
+				dbs.add(db);
+			}
+		} catch (Exception e) {
+			log.error("Import failed for database mapping " + mapping.getAbsolutePath(), e);
+		}
+	}
+
+	private String injectDbName(File mapping, String inputJson) {
+		String dbName = mapping.getName();
+		int idx = dbName.lastIndexOf(".json");
+		if (idx == -1)
+			throw new RuntimeException("Database mapping filename should ends with .json");
+		dbName = dbName.substring(0, idx);
+		inputJson = "{\"" + dbName + "\":" + inputJson + "\n}";
+		return inputJson;
+	}
+
+	private String loadJson(File mapping) {
+		InputStream is = resourceResolverService.find(mapping.getAbsolutePath());
+		String inputJson = new BufferedReader(new InputStreamReader(is)).lines()
+				.collect(Collectors.joining("\n"));
+		return inputJson;
 	}
 
 	private DatabaseMapping readDatabaseMapping(JsonObject mappings, String dbName) {
