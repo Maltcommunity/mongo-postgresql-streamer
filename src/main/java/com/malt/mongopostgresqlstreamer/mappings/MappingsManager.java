@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.mappings;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -27,6 +27,7 @@ import com.malt.mongopostgresqlstreamer.model.FieldMapping;
 import com.malt.mongopostgresqlstreamer.model.FilterMapping;
 import com.malt.mongopostgresqlstreamer.model.Mappings;
 import com.malt.mongopostgresqlstreamer.model.TableMapping;
+import com.malt.mongopostgresqlstreamer.resources.ResourceResolverService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +38,11 @@ public class MappingsManager {
 	private final ResourceResolverService resourceResolverService;
 	private final File mapping;
 
-	Mappings mappingConfigs;
+	private Mappings mappingConfigs;
+
+	public Mappings getMappingConfigs() {
+		return mappingConfigs;
+	}
 
 	@Inject
 	public MappingsManager(ResourceResolverService resourceResolverService,
@@ -53,7 +58,7 @@ public class MappingsManager {
 		mappingConfigs = read(mapping);
 	}
 
-	Mappings read(File mapping) {
+	public Mappings read(File mapping) {
 		Mappings mappingConfigs = new Mappings();
 		List<DatabaseMapping> dbs = new ArrayList<>();
 

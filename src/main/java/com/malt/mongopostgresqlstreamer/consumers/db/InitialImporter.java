@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.consumers.db;
 
 import static java.util.stream.Collectors.toList;
 
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.malt.mongopostgresqlstreamer.connectors.Connector;
+import com.malt.mongopostgresqlstreamer.mappings.MappingsManager;
 import com.malt.mongopostgresqlstreamer.model.DatabaseMapping;
 import com.malt.mongopostgresqlstreamer.model.FilterMapping;
 import com.malt.mongopostgresqlstreamer.model.FlattenMongoDocument;
@@ -43,7 +44,8 @@ public class InitialImporter {
 	}
 
 	private void populateData() {
-		for (DatabaseMapping databaseMapping : mappingsManager.mappingConfigs.getDatabaseMappings()) {
+		for (DatabaseMapping databaseMapping : mappingsManager.getMappingConfigs()
+				.getDatabaseMappings()) {
 			MongoDatabase mongoDatabase = mongoClient.getDatabase(databaseMapping.getName());
 			List<String> collectionNames = toStream(mongoDatabase.listCollectionNames()
 					.iterator()).collect(toList());
@@ -76,7 +78,8 @@ public class InitialImporter {
 
 	@Transactional
 	protected void createSchema() {
-		for (DatabaseMapping databaseMapping : mappingsManager.mappingConfigs.getDatabaseMappings()) {
+		for (DatabaseMapping databaseMapping : mappingsManager.getMappingConfigs()
+				.getDatabaseMappings()) {
 			MongoDatabase mongoDatabase = mongoClient.getDatabase(databaseMapping.getName());
 			List<String> collectionNames = toStream(mongoDatabase.listCollectionNames()
 					.iterator()).collect(toList());
@@ -95,7 +98,8 @@ public class InitialImporter {
 	@Transactional
 	protected void addConstraints() {
 		log.info("Add constraints");
-		for (DatabaseMapping databaseMapping : mappingsManager.mappingConfigs.getDatabaseMappings()) {
+		for (DatabaseMapping databaseMapping : mappingsManager.getMappingConfigs()
+				.getDatabaseMappings()) {
 			MongoDatabase mongoDatabase = mongoClient.getDatabase(databaseMapping.getName());
 			List<String> collectionNames = toStream(mongoDatabase.listCollectionNames()
 					.iterator()).collect(toList());

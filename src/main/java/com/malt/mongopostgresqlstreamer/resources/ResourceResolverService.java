@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.resources;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +28,7 @@ public class ResourceResolverService {
 		this.resourceResolvers.add(fallbackResourceResolver);
 	}
 
-	InputStream find(String path) {
+	public InputStream find(String path) {
 		for (ResourceLoader resourceLoader : resourceResolvers) {
 			InputStream is = find(path, resourceLoader);
 			if (is != null) {

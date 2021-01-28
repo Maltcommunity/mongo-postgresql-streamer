@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.consumers.db;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.malt.mongopostgresqlstreamer.connectors.Connector;
+import com.malt.mongopostgresqlstreamer.mappings.MappingsManager;
 import com.malt.mongopostgresqlstreamer.model.FilterMapping;
 import com.malt.mongopostgresqlstreamer.model.FlattenMongoDocument;
 import com.malt.mongopostgresqlstreamer.model.TableMapping;
@@ -56,7 +57,7 @@ public class OplogStreamer {
 	@Autowired
 	private List<Connector> connectors;
 
-	void watchFromCheckpoint(Optional<BsonTimestamp> checkpoint) {
+	public void watchFromCheckpoint(Optional<BsonTimestamp> checkpoint) {
 		int watches = 1;
 
 		while (true) {
@@ -114,7 +115,8 @@ public class OplogStreamer {
 		String operation = document.getString("op");
 		BsonTimestamp timestamp = document.get("ts", BsonTimestamp.class);
 
-		mappingsManager.mappingConfigs.databaseMappingFor(database)
+		mappingsManager.getMappingConfigs()
+				.databaseMappingFor(database)
 				.ifPresent(mappings -> {
 					MongoDatabase mongoDb = mongoClient.getDatabase(database);
 					List<TableMapping> tableMappings = mappings.getBySourceName(collection);

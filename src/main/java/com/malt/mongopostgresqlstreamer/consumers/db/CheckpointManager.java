@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.consumers.db;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -71,7 +71,7 @@ public class CheckpointManager {
 		return initialImport;
 	}
 
-	BsonTimestamp getLastOplog() {
+	public BsonTimestamp getLastOplog() {
 		Document lastOplog = oplog.getCollection(OPLOG_COLLECTION_NAME)
 				.find()
 				.sort(Sorts.descending("$natural"))

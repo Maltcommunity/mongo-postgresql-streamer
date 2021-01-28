@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 
+import com.malt.mongopostgresqlstreamer.resources.ResourceNotFoundException;
+import com.malt.mongopostgresqlstreamer.resources.ResourceResolverService;
+
 import java.io.*;
 import java.net.URL;
 import java.util.Objects;

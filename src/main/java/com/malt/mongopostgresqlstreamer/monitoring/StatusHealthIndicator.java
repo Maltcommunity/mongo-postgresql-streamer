@@ -9,7 +9,7 @@ import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
-import com.malt.mongopostgresqlstreamer.CheckpointManager;
+import com.malt.mongopostgresqlstreamer.consumers.db.CheckpointManager;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 

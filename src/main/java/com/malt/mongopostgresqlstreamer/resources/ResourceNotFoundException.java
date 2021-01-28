@@ -1,4 +1,4 @@
-package com.malt.mongopostgresqlstreamer;
+package com.malt.mongopostgresqlstreamer.resources;
 
 public class ResourceNotFoundException extends RuntimeException {
 
