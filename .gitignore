@@ -10,3 +10,6 @@
 mappings.json
 
 application-dev.yml
+/.classpath
+/.project
+/.settings
