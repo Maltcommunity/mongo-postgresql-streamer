@@ -269,3 +269,7 @@ However, some features/improvements are currently lacking :
 Even if this code is battle tested (we use it in production and fix for bugs every time we see one), it is far from
 perfect. 
 
+Project documentation and IDE Setup
+-----------------------------------
+
+More documentation can be found [here](./doc/index.md).
