@@ -1,0 +1,48 @@
+{
+  "campaigns": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "publishingDate": {
+      "type": "DATE"
+    },
+    "expirationDate": {
+      "type": "DATE"
+    },
+    "locale": {
+      "type": "TEXT"
+    },
+    "offer.monthlyBudget": {
+      "dest": "monthlyBudget",
+      "type": "REAL"
+    }
+  },
+  "packs": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "client": {
+      "dest": "clientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "externalClientId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "activated": {
+      "type": "BOOLEAN"
+    }
+  }
+}

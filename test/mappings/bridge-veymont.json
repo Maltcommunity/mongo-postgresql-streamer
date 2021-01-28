@@ -1,0 +1,150 @@
+{
+  "profiles": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "userId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "firstName": {
+      "type": "TEXT"
+    },
+    "lastName": {
+      "type": "TEXT"
+    },
+    "currentClient": {
+      "dest": "currentClientId",
+      "type": "TEXT",
+      "index": true
+    },
+    "lastLoginDate": {
+      "type": "DATE"
+    },
+    "bridgeRole.level": {
+      "dest": "level",
+      "type": "TEXT"
+    },
+    "locations": {
+      "dest": "users_locations",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "userId",
+      "valueField": "locationId"
+    },
+    "clients": {
+      "dest": "users_clients",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "userId",
+      "valueField": "clientId"
+    },
+    "notifications.lead.creation.active": {
+      "dest": "alerts_lead_creation",
+      "type": "BOOLEAN"
+    },
+    "notifications.lead.update.active": {
+      "dest": "alerts_lead_update",
+      "type": "BOOLEAN"
+    },
+    "notifications.history.active": {
+      "dest": "alerts_location_history",
+      "type": "BOOLEAN"
+    },
+    "notifications.reviews.badReviewsAlert.active": {
+      "dest": "alerts_reviews_daily",
+      "type": "BOOLEAN"
+    },
+    "notifications.reviews.weeklyReport.active": {
+      "dest": "alerts_reviews_weekly",
+      "type": "BOOLEAN"
+    },
+    "notifications.reviews.monthlyReport.active": {
+      "dest": "alerts_reviews_monthly",
+      "type": "BOOLEAN"
+    }
+  },
+  "users_locations": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "userId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "locationId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "users_clients": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "userId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "bridgeroles": {
+    "pk": "id",
+    "_id": {
+      "dest": "id",
+      "type": "TEXT",
+      "index": true
+    },
+    "level": {
+      "type": "TEXT"
+    },
+    "clients": {
+      "dest": "bridgeroles_clients",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "bridgeRoleId",
+      "valueField": "clientId"
+    },
+    "features": {
+      "dest": "bridgeroles_features",
+      "type": "_ARRAY_OF_SCALARS",
+      "fk": "bridgeRoleId",
+      "valueField": "feature"
+    }
+  },
+  "bridgeroles_clients": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "bridgeRoleId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "clientId": {
+      "type": "TEXT",
+      "index": true
+    }
+  },
+  "bridgeroles_features": {
+    "pk": "id",
+    "id": {
+      "type": "TEXT",
+      "index": true
+    },
+    "bridgeRoleId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "feature": {
+      "type": "TEXT"
+    }
+  }
+}

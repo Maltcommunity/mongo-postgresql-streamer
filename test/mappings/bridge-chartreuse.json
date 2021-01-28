@@ -1,0 +1,42 @@
+{
+    "credentials": {
+        "pk": "id",
+        "_id": {
+            "dest": "id",
+            "type": "TEXT",
+            "index": true
+        },
+        "client": {
+            "dest": "clientId",
+            "type": "TEXT",
+            "index": true
+        },
+        "locale": {
+            "type": "TEXT"
+        },
+        "ltsVersion": {
+            "type": "SMALLINT"
+        },
+        "sso.roles": {
+            "dest": "credentials_sso_roles",
+            "type": "_ARRAY_OF_SCALARS",
+            "fk": "credentialSsoId",
+            "valueField": "role"
+        }
+    },
+    "credentials_sso_roles": {
+        "pk": "id",
+        "_id": {
+            "dest": "id",
+            "type": "TEXT"
+        },
+        "credentialSsoId": {
+            "type": "TEXT",
+            "index": true
+        },
+        "role": {
+            "type": "TEXT"
+        }
+    }
+  }
+  

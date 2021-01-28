@@ -1,0 +1,50 @@
+{
+  "billings": {
+    "pk": "id",
+    "billableDays": {
+      "type": "INT"
+    },
+    "bills": {
+      "dest": "billings_bills",
+      "type": "_ARRAY",
+      "fk": "billingId"
+    },
+    "epj": {
+      "type": "TEXT",
+      "dest": "externalClientId",
+      "index": true
+    }
+  },
+  "billings_bills": {
+    "pk": "id",
+    "billingId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "billStartDate": {
+      "type": "DATE",
+      "index": true
+    },
+    "sent": {
+      "type": "BOOLEAN"
+    },
+    "listItems": {
+      "dest": "billings_bills_items",
+      "type": "_ARRAY",
+      "fk": "billId"
+    }
+  },
+  "billings_bills_items": {
+    "pk": "id",
+    "billId": {
+      "type": "TEXT",
+      "index": true
+    },
+    "price": {
+      "type": "REAL"
+    },
+    "name": {
+      "type": "TEXT"
+    }
+  }
+}
