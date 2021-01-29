@@ -37,6 +37,7 @@ public class PostgreSqlConnector implements Connector {
 
 	@Override
 	public void createTable(String mappingName, DatabaseMapping mapping) {
+		log.info("Drop and create table " + mappingName);
 		dropTableAndRelatives(mappingName, mapping);
 		createTableAndRelatives(mappingName, mapping);
 	}
@@ -117,7 +118,10 @@ public class PostgreSqlConnector implements Connector {
 
 	@Override
 	public void insert(String mappingName, FlattenMongoDocument document, DatabaseMapping mappings) {
-		upsert(mappingName, document, mappings);
+		String parentMappingName = mappingName;
+		TableMapping parentMapping = getTableMappingOrFail(parentMappingName, mappings);
+		TableMapping tableMapping = getTableMappingOrFail(mappingName, mappings);
+		importDocument(document, mappings, tableMapping, parentMapping);
 	}
 
 	@Override

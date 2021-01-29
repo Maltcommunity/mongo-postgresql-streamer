@@ -133,7 +133,7 @@ public class OplogStreamer {
 							FlattenMongoDocument newDocument = FlattenMongoDocument
 									.fromDocument((Document) document.get("o"));
 							if (mappingFilters.test(newDocument)) {
-								connectors.forEach(connector -> connector.insert(tableMapping.getMappingName(),
+								connectors.forEach(connector -> connector.upsert(tableMapping.getMappingName(),
 										newDocument, mappings));
 							}
 							break;
