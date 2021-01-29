@@ -21,6 +21,7 @@ public class FlatBsonDecoder {
 
 	public Map<String, Object> decode() throws IOException {
 		readValue("");
+		// dumpDocumentMap();
 		return documentMap;
 	}
 
@@ -49,15 +50,14 @@ public class FlatBsonDecoder {
 		} else if (jt == JsonToken.VALUE_EMBEDDED_OBJECT) {
 			Object obj = jsonParser.getEmbeddedObject();
 			if (obj instanceof ObjectId) {
-				ObjectId id = (ObjectId) obj;
-				String sid = String.format("%08X", id.getInc()) + " " + String.format("%08X", id.getTime()) + " "
-						+ String.format("%08X", id.getMachine());
-				documentMap.put(prefix, sid);
-			} else {
-				documentMap.put(prefix, obj);
+				ObjectId oid = (ObjectId) obj;
+				org.bson.types.ObjectId mongoObjectId = org.bson.types.ObjectId.createFromLegacyFormat(oid.getTime(),
+						oid.getMachine(), oid.getInc());
+				obj = mongoObjectId;
 			}
+			documentMap.put(prefix, obj);
 		} else {
-			log.warn("Unexpected token " + jt.name() + " " + jt.asString());
+			log.error("Unexpected token " + jt.name() + " " + jt.asString());
 		}
 	}
 
@@ -82,5 +82,14 @@ public class FlatBsonDecoder {
 			idx++;
 		}
 
+	}
+
+	private void dumpDocumentMap() {
+		documentMap.keySet()
+				.stream()
+				.sorted(String::compareTo)
+				.forEach(key -> {
+					log.info(key + ":" + documentMap.get(key));
+				});
 	}
 }

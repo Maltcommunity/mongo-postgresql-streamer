@@ -5,23 +5,27 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.malt.mongopostgresqlstreamer.connectors.Connector;
 import com.malt.mongopostgresqlstreamer.consumers.ETLConsumer;
 import com.malt.mongopostgresqlstreamer.consumers.dump.model.GenericCollectionRecord;
 import com.malt.mongopostgresqlstreamer.consumers.dump.model.Header;
@@ -29,6 +33,7 @@ import com.malt.mongopostgresqlstreamer.consumers.dump.model.MongoCollection;
 import com.malt.mongopostgresqlstreamer.mappings.MappingsManager;
 import com.malt.mongopostgresqlstreamer.model.DatabaseMapping;
 import com.malt.mongopostgresqlstreamer.model.FlattenMongoDocument;
+import com.malt.mongopostgresqlstreamer.model.TableMapping;
 
 import de.undercouch.bson4jackson.BsonFactory;
 import de.undercouch.bson4jackson.BsonParser;
@@ -44,6 +49,9 @@ public class MongoDumpConsumer implements ETLConsumer {
 	private MappingsManager mappingsManager;
 
 	private Map<String, DatabaseMapping> databaseMappings;
+
+	@Autowired
+	private List<Connector> connectors;
 
 	@Override
 	public void consume() {
@@ -65,7 +73,15 @@ public class MongoDumpConsumer implements ETLConsumer {
 						.endsWith(".gz"))
 				.collect(Collectors.toList());
 
-		dumps.forEach(this::consumeDump);
+		long start = System.currentTimeMillis();
+		try {
+			dumps.forEach(this::consumeDump);
+		} finally {
+			long end = System.currentTimeMillis();
+			LocalTime delta = LocalTime.ofSecondOfDay((end - start) / 1000);
+			log.info("Processing duration: " + delta.toString());
+		}
+
 	}
 
 	private void readMagic(DataInputStream in) throws IOException {
@@ -88,25 +104,29 @@ public class MongoDumpConsumer implements ETLConsumer {
 	private void consumeDump(File dumpFile) {
 		log.info("Importing dump " + dumpFile.getAbsolutePath());
 
-		BsonFactory jsonFactory = new BsonFactory();
-		jsonFactory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
-		SimpleModule simpleModule = new SimpleModule();
+		try {
+			BsonFactory jsonFactory = new BsonFactory();
+			jsonFactory.enable(BsonParser.Feature.HONOR_DOCUMENT_LENGTH);
+			SimpleModule simpleModule = new SimpleModule();
 
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(simpleModule);
-		jsonFactory.setCodec(objectMapper);
-		try (DataInputStream in = new DataInputStream(new GZIPInputStream(new FileInputStream(dumpFile)))) {
-			readMagic(in);
-			readPrelude(jsonFactory, in);
-			readBody(jsonFactory, in);
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.registerModule(simpleModule);
+			jsonFactory.setCodec(objectMapper);
+			try (DataInputStream in = new DataInputStream(new GZIPInputStream(new FileInputStream(dumpFile)))) {
+				readMagic(in);
+				List<MongoCollection> collections = readPrelude(jsonFactory, in);
+				createSchema(collections);
+				readBody(jsonFactory, in);
+				addConstraints(collections);
+			}
+			log.info("Dump imported " + dumpFile.getAbsolutePath());
 		} catch (Exception e) {
-			log.error("Unexpected error", e);
+			log.error("Error importing dump " + dumpFile.getAbsolutePath(), e);
 		}
 
-		log.info("Dump imported " + dumpFile.getAbsolutePath());
 	}
 
-	private void readPrelude(BsonFactory jsonFactory, DataInputStream in)
+	private List<MongoCollection> readPrelude(BsonFactory jsonFactory, DataInputStream in)
 			throws IOException, JsonParseException, JsonMappingException {
 		readObject(jsonFactory, in, Header.class);
 		List<MongoCollection> collections = new ArrayList<>();
@@ -120,6 +140,7 @@ public class MongoDumpConsumer implements ETLConsumer {
 				break;
 			}
 		}
+		return collections;
 	}
 
 	private void readBody(BsonFactory jsonFactory, DataInputStream in) throws IOException {
@@ -140,7 +161,9 @@ public class MongoDumpConsumer implements ETLConsumer {
 	private void readSlice(BsonFactory jsonFactory, DataInputStream in)
 			throws IOException, JsonParseException, JsonMappingException {
 		MongoCollection collection = readObject(jsonFactory, in, MongoCollection.class);
-		if (!databaseMappings.containsKey(collection.database)) {
+		DatabaseMapping mapping = databaseMappings.get(collection.database);
+		if (mapping == null || mapping.get(collection.name)
+				.isEmpty()) {
 			skipCollectionSlice(jsonFactory, in, collection);
 		} else {
 			consumeCollectionSlice(jsonFactory, in, collection);
@@ -155,13 +178,20 @@ public class MongoDumpConsumer implements ETLConsumer {
 		long recordCount = 0;
 		for (;;) {
 			try {
-				readFlattenMongoDocument(jsonFactory, in);
+				export(collection, readFlattenMongoDocument(jsonFactory, in));
 				recordCount++;
 			} catch (EOFException e) {
 				break;
 			}
 		}
 		log.info("Slice " + sliceName + ": " + recordCount + " records consumed");
+
+	}
+
+	private void export(MongoCollection collection, FlattenMongoDocument readFlattenMongoDocument) {
+		for (Connector connector : connectors) {
+			connector.insert(collection.name, readFlattenMongoDocument, databaseMappings.get(collection.database));
+		}
 
 	}
 
@@ -196,4 +226,46 @@ public class MongoDumpConsumer implements ETLConsumer {
 		}
 	}
 
+	@Transactional
+	private void createSchema(List<MongoCollection> collections) {
+		for (DatabaseMapping databaseMapping : mappingsManager.getMappingConfigs()
+				.getDatabaseMappings()) {
+			List<String> collectionNames = collections.stream()
+					.map(c -> c.name)
+					.collect(Collectors.toList());
+			for (Connector connector : connectors) {
+				for (TableMapping tableMapping : databaseMapping.getTableMappings()) {
+					boolean needToBeImported = collectionNames.stream()
+							.anyMatch(collectionIsMapped(tableMapping));
+					if (needToBeImported) {
+						connector.createTable(tableMapping.getMappingName(), databaseMapping);
+					}
+				}
+			}
+		}
+	}
+
+	private Predicate<String> collectionIsMapped(TableMapping tableMapping) {
+		return collectionName -> collectionName.equals(tableMapping.getSourceCollection());
+	}
+
+	@Transactional
+	private void addConstraints(List<MongoCollection> collections) {
+		log.info("Add constraints");
+		for (DatabaseMapping databaseMapping : mappingsManager.getMappingConfigs()
+				.getDatabaseMappings()) {
+			List<String> collectionNames = collections.stream()
+					.map(c -> c.name)
+					.collect(Collectors.toList());
+			for (Connector connector : connectors) {
+				for (TableMapping tableMapping : databaseMapping.getTableMappings()) {
+					boolean needToBeImported = collectionNames.stream()
+							.anyMatch(collectionIsMapped(tableMapping));
+					if (needToBeImported) {
+						connector.addConstraints(tableMapping.getMappingName(), databaseMapping);
+					}
+				}
+			}
+		}
+	}
 }
