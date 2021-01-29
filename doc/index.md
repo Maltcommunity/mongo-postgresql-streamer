@@ -198,6 +198,31 @@ for (;;) {
 }
 ```
 
+## The end of the dump
+
+At the end of the dump, the input stream have nothing to provide to the consumer. So the Bson API will raise an **IOException** exactly when it try to read the first bytes of a Bson document. This is of course, the expected behavior. 
+
+Because of this, we consume the entire dump body like this:
+
+```java
+	private void readBody(BsonFactory jsonFactory, DataInputStream in) throws IOException {
+		for (;;) {
+			try {
+				readSlice(jsonFactory, in);
+			} catch (IOException e) {
+				if (in.available() == 0) {
+					break; // End of the entire dump
+				} else {
+					log.error("Unexpected error", e);
+					break;
+				}
+			}
+		}
+	}
+```
+
+
+
 ## Skip unused records
 
 Since we consume a stream, **it is not allowed to "seek to skip"**, we must consume the current bson record. In order to do that as quickly as possible we just consume the following class:
@@ -210,9 +235,39 @@ public class GenericCollectionRecord {
 
 ## Consume relevant records
 
+### Parser
+
 Once we encounter a relevant record, we still don't know its structure. So we must use the low level parser API to read token by token the data and forge a data structure that is relevant for our job.
 
 Typical tokens are: START_OBJECT,START_ARRAY,VALUE_STRING,VALUE_NUMBER_INT,VALUE_TRUE,VALUE_FALSE,END_OBJECT,END_ARRAY... 
 
 The job of the class **FlatBsonDecoder** is to receive the stream of tokens and produce a hashmap representing the current record. This map will be used as input for the export to PostgreSQL.
+
+### About ObjectId format
+
+ObjectId is a 12-byte representation of a unique identifier for a record. Nevertheless, there is a subtility around those 12 bytes:
+
+- Old ObjectId are composed by 3 values: **time**, **machine** and **inc**
+- New ObjectId are composed by 4 values: **time**, **machine**, **processId** and **inc**
+
+Those two formats are exchangeable. The 12-byte representation will be round-trippable from old to new driver releases.
+
+The Jackson API rely on the old format so we need to convert to the new format at some point with the following code:
+
+```java
+ObjectId oid = (ObjectId) obj; // The Jackson ObjectId class
+org.bson.types.ObjectId mongoObjectId = org.bson.types.ObjectId.createFromLegacyFormat(oid.getTime(),
+						oid.getMachine(), oid.getInc());
+```
+
+# About this project
+
+## History
+
+This is a fork from the project [mongo-postgresql-streamer](https://github.com/Maltcommunity/mongo-postgresql-streamer).
+
+- Initialy the project was intented to read directly from a MongoDB database
+- We extended it to take multiple MongoDB dumps instead.
+
+The project use Lombok which is unfortunate. We may remove it at some point.
 
