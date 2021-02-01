@@ -1,4 +1,4 @@
-Project documentation
+# <u>Project documentation</u>
 
 # IDE
 
@@ -45,7 +45,7 @@ The way Lombok work can be questionable (more info [here](https://news.ycombinat
 - Some people are uncomfortable with the extensive bytecode manipulation that it does. 
 
 The drawback: 
-- You are writing code that cannot be understood by any IDE without a plugin.
+- You are writing code that cannot be understood by any IDE without a plugin: this is *NOT* Java.
 - Without a Lombok plugin, your IDE will complain that you didn't wrote the getters and setters.
 - In case of incompatiblity or deprecation in future JDK, your entire code base will be broken.
 
@@ -271,3 +271,18 @@ This is a fork from the project [mongo-postgresql-streamer](https://github.com/M
 
 The project use Lombok which is unfortunate. We may remove it at some point.
 
+## Wording
+
+The wording around this project is not correct, it is not about **replication**. It is an ETL process: [Extract Transform Load](https://en.wikipedia.org/wiki/Extract,_transform,_load). ETL is an essential step to populate databases specialized in [Business Intelligence](https://en.wikipedia.org/wiki/Business_intelligence) (reporting, analytics, dashboards).
+
+TODO: We should replace any references to "*replication*" by "*ETL*".
+
+## Improvements
+
+In the first place, the tool was used on a temporary MongoDb database to avoid any workload on the prod Db. Because of this, it takes 1H to migrate all the data to Postgres.
+
+The new version work directly on a prod dump (made with Mongodump) and do the same in 12min max.
+
+## Kubernetes configuration
+
+go [here](k8s-etl.md).

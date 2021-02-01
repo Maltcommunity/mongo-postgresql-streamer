@@ -37,7 +37,7 @@ To install mongo-postresql-streamer:
 - compile the application with
 ```
     mvn install
-``` 
+```
 - the executable is located in the target folder. You can run it with the following command
 ```
     java -jar target/mongo-postgresql-streamer*.jar
@@ -70,9 +70,9 @@ Alternatively, you can use a configuration file (in yml or properties format) li
 |mongo.connector.forcereimport | false | Use this argument if you want to force a new reimport of your schema and data  |
 |mappings | mappings.json | The path to your mapping file |
 |mongo.uri | mongodb://localhost:27017 | The connection url to your mongodb database |
- 
+
  This option's list is not exhaustive.
- 
+
 
 ## Mapping file
 
@@ -273,3 +273,4 @@ Project documentation and IDE Setup
 -----------------------------------
 
 More documentation can be found [here](./doc/index.md).
+
