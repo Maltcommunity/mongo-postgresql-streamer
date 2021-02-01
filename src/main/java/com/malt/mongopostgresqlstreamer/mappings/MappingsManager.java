@@ -50,6 +50,9 @@ public class MappingsManager {
 
 		this.mapping = new File(mappingPath);
 
+		if (!mapping.exists())
+			throw new RuntimeException("Database mapping file/folder not found: " + mappingPath);
+
 		this.resourceResolverService = resourceResolverService;
 	}
 
